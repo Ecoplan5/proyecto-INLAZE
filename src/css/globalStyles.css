@@ -1,0 +1,50 @@
+/* Estilos globales para formularios */
+form {
+    @apply space-y-6 bg-white p-6 rounded-lg shadow-md; /* Espaciado entre los elementos, fondo blanco, padding, bordes redondeados y sombra */
+}
+
+/* Campos de entrada */
+input,
+textarea,
+select {
+    @apply w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200; /* Campos de entrada más grandes, bordes redondeados, y enfoque con color */
+}
+
+/* Campos de texto, como descripciones */
+textarea {
+    @apply h-32; /* Altura definida para los campos de texto */
+}
+
+/* Estilo para botones */
+button {
+    @apply bg-blue-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-blue-700 transition duration-300 ease-in-out; /* Estilo de botón con transición y color al pasar el mouse */
+}
+
+/* Estilo para el mensaje de éxito */
+.alert-success {
+    @apply bg-green-100 text-green-800 border-l-4 border-green-500 p-4 mt-4 rounded-lg; /* Estilo para el mensaje de éxito */
+}
+
+/* Estilo para el mensaje de error */
+.alert-error {
+    @apply bg-red-100 text-red-800 border-l-4 border-red-500 p-4 mt-4 rounded-lg; /* Estilo para el mensaje de error */
+}
+
+/* Espaciado y bordes entre las secciones del formulario */
+fieldset {
+    @apply space-y-4; /* Espaciado entre los elementos dentro del fieldset */
+}
+
+legend {
+    @apply font-semibold text-lg text-gray-700; /* Estilo del título del fieldset */
+}
+
+/* Estilo para el mensaje de carga o esperando */
+.loading {
+    @apply text-center text-gray-500 italic; /* Estilo de texto para mostrar mensajes de carga */
+}
+
+/* Estilos generales para la etiqueta de los campos */
+label {
+    @apply text-gray-700 font-medium; /* Color y fuente para las etiquetas */
+}
