@@ -109,36 +109,35 @@ const Detalle = () => {
                 </button>
             </div>
 
-          
+
             <div className="rounded-lg p-3 mb-4">
                 <h6 className="text-xl font-bold">Búsquedas y Filtros</h6>
             </div>
 
             <div className="mb-4 flex justify-between items-center">
-    <div className="flex gap-4">
-        <input
-            type="text"
-            placeholder="Buscar por palabra clave o usuario..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            className="p-2 border border-gray-400 rounded"
-        />
-        <select
-            value={filterState}
-            onChange={(e) => setFilterState(e.target.value)}
-            className="p-2 border border-gray-400 rounded"
-        >
-            <option value="todos">Todos los estados</option>
-            <option value="por_hacer">Por hacer</option>
-            <option value="en_progreso">En progreso</option>
-            <option value="completada">Completada</option>
-        </select>
-    </div>
-    <div className="rounded-lg p-3">
-        <h6 className="text-xl font-bold">LISTA DE PROYECTOS</h6>
-    </div>
-</div>
-
+                <div className="flex gap-4">
+                    <input
+                        type="text"
+                        placeholder="Buscar por palabra clave o usuario..."
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                        className="p-2 border border-gray-400 rounded"
+                    />
+                    <select
+                        value={filterState}
+                        onChange={(e) => setFilterState(e.target.value)}
+                        className="p-2 border border-gray-400 rounded"
+                    >
+                        <option value="todos">Todos los estados</option>
+                        <option value="por_hacer">Por hacer</option>
+                        <option value="en_progreso">En progreso</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+                <div className="rounded-lg p-3">
+                    <h6 className="text-xl font-bold">LISTA DE PROYECTOS</h6>
+                </div>
+            </div>
 
             <table className="table-auto w-full border-collapse border border-gray-200">
                 <thead>
@@ -146,7 +145,7 @@ const Detalle = () => {
                         <th className="border border-gray-300 px-4 py-2">ID Proyecto</th>
                         <th className="border border-gray-300 px-4 py-2">Nombre Proyecto</th>
                         <th className="border border-gray-300 px-4 py-2">Descripción</th>
-                        <th className="border border-gray-300 px-4 py-2">Usuario</th>
+                        <th className="border border-gray-300 px-4 py-2">Usuario Creador</th>
                         <th className="border border-gray-300 px-4 py-2">Tareas</th>
                         <th className="border border-gray-300 px-4 py-2">Acciones</th>
                     </tr>
@@ -156,10 +155,11 @@ const Detalle = () => {
                         filteredProyectos.map((proyecto) => (
                             <React.Fragment key={proyecto.id_proyecto}>
                                 <tr>
+                                    {/* Datos del proyecto */}
                                     <td className="border border-gray-300 px-4 py-2">{proyecto.id_proyecto}</td>
                                     <td className="border border-gray-300 px-4 py-2">{proyecto.nombre_proyecto}</td>
                                     <td className="border border-gray-300 px-4 py-2">{proyecto.descripcion}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{proyecto.Usuario.nombre_usuario}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{proyecto.usuario_creador.nombre_usuario}</td>
                                     <td className="border border-gray-300 px-4 py-2">
                                         {mostrarTareas && (
                                             <table className="table-auto w-full border-collapse border border-gray-200">
@@ -169,47 +169,61 @@ const Detalle = () => {
                                                         <th className="border border-gray-300 px-4 py-2">Descripción</th>
                                                         <th className="border border-gray-300 px-4 py-2">Fecha Límite</th>
                                                         <th className="border border-gray-300 px-4 py-2">Estado</th>
+                                                        <th className="border border-gray-300 px-4 py-2">Asignados</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {proyecto.Tareas.map((tarea) => (
+                                                    {proyecto.tareas.map((tarea) => (
                                                         <tr key={tarea.id_tarea}>
+                                                            {/* Datos de la tarea */}
                                                             <td className="border border-gray-300 px-4 py-2">{tarea.titulo}</td>
                                                             <td className="border border-gray-300 px-4 py-2">{tarea.descripcion}</td>
                                                             <td className="border border-gray-300 px-4 py-2">
                                                                 {new Date(tarea.fecha_limite).toLocaleDateString()}
                                                             </td>
                                                             <td className="border border-gray-300 px-4 py-2">{tarea.estado}</td>
+                                                            <td className="border border-gray-300 px-4 py-2">
+                                                                {tarea.usuarios.length > 0 ? (
+                                                                    <ul className="list-disc pl-5">
+                                                                        {tarea.usuarios.map((usuario) => (
+                                                                            <li key={usuario.id_usuario}>{usuario.nombre_usuario}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                ) : (
+                                                                    <span className="text-gray-500">No asignados</span>
+                                                                )}
+                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
                                         )}
                                     </td>
-                                  
                                     <td className="border border-gray-300 px-4 py-2">
-                                    <div className="flex flex-col items-center text-center">
-                                        <button
-                                            className="text-yellow-500 hover:text-yellow-600"
-                                            onClick={() => manejarEdicion(proyecto)}
-                                        >
-                                            <FaPencilAlt />
-                                        </button>
-                                        <p className="text-xs text-gray-600 mt-1">Proyecto</p>
-                                    </div>
+                                        <div className="flex flex-col items-center text-center">
+                                            <button
+                                                className="text-yellow-500 hover:text-yellow-600"
+                                                onClick={() => manejarEdicion(proyecto)}
+                                            >
+                                                <FaPencilAlt />
+                                            </button>
+                                            <p className="text-xs text-gray-600 mt-1">Proyecto</p>
+                                        </div>
                                     </td>
                                 </tr>
                             </React.Fragment>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6" className="border border-gray-300 px-4 py-2 text-center">
+                            <td colSpan="5" className="border border-gray-300 px-4 py-2 text-center">
                                 No hay proyectos disponibles.
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
+
+
 
             {proyectoEditable && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

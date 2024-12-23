@@ -299,9 +299,10 @@ const ProyectoList = () => {
                         filteredProyectos.map((proyecto) => (
                             <React.Fragment key={proyecto.id_proyecto}>
                                 <tr>
+                                    {/* Datos del proyecto */}
                                     <td className="border border-gray-300 px-4 py-2">{proyecto.nombre_proyecto}</td>
                                     <td className="border border-gray-300 px-4 py-2">{proyecto.descripcion}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{proyecto.Usuario.nombre_usuario}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{proyecto.usuario_creador.nombre_usuario}</td>
                                     <td className="border border-gray-300 px-4 py-2">
                                         <table className="table-auto w-full border-collapse border border-gray-200">
                                             <thead>
@@ -310,12 +311,13 @@ const ProyectoList = () => {
                                                     <th className="border border-gray-300 px-4 py-2">Descripción</th>
                                                     <th className="border border-gray-300 px-4 py-2">Fecha Límite</th>
                                                     <th className="border border-gray-300 px-4 py-2">Estado</th>
+                                                    <th className="border border-gray-300 px-4 py-2">Asingnados</th>
                                                     <th className="border border-gray-300 px-4 py-2">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {proyecto.Tareas && proyecto.Tareas.length > 0 ? (
-                                                    proyecto.Tareas
+                                                {proyecto.tareas && proyecto.tareas.length > 0 ? (
+                                                    proyecto.tareas
                                                         .filter(
                                                             (tarea) => !filterDate || tarea.fecha_limite === filterDate
                                                         )
@@ -340,6 +342,17 @@ const ProyectoList = () => {
                                                                             <option value="en_progreso">En progreso</option>
                                                                             <option value="completada">Completada</option>
                                                                         </select>
+                                                                    </td>
+                                                                    <td className="border border-gray-300 px-4 py-2">
+                                                                        {tarea.usuarios.length > 0 ? (
+                                                                            <ul className="list-disc pl-5">
+                                                                                {tarea.usuarios.map((usuario) => (
+                                                                                    <li key={usuario.id_usuario}>{usuario.nombre_usuario}</li>
+                                                                                ))}
+                                                                            </ul>
+                                                                        ) : (
+                                                                            <span className="text-gray-500">No asignados</span>
+                                                                        )}
                                                                     </td>
                                                                     <td className="border border-gray-300 px-4 py-2">
                                                                         <div className="flex flex-row items-center gap-8">
@@ -390,7 +403,7 @@ const ProyectoList = () => {
                                                                     <tr>
                                                                         <td colSpan="6" className="border border-gray-300 px-4 py-2">
                                                                             <div>
-                                                                            <h2 className="text-lg font-semibold mb-4">Comentarios</h2>
+                                                                                <h2 className="text-lg font-semibold mb-4">Comentarios</h2>
 
                                                                                 {comentariosPorTarea[tarea.id_tarea]?.length > 0 ? (
                                                                                     <ul className="space-y-2">

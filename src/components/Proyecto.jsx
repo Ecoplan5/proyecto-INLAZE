@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import proyectoService from "../services/proyectoService";
 import tareaService from "../services/tareaService";
+import usuarioService from "../services/usuarioService"; // Servicio para obtener los usuarios
+
 import "../css/global1Styles.css"; // Importa los estilos proporcionados
 
 const id_usuario = localStorage.getItem("id_usuario");
@@ -14,6 +19,9 @@ const Proyecto = () => {
         descripcion: "",
     });
 
+
+    const [usuarios, setUsuarios] = useState([]);
+    const [selectedUsuarios, setSelectedUsuarios] = useState([]);
     const [mostrarTarea, setMostrarTarea] = useState(false);
 
     const [tareaData, setTareaData] = useState({
@@ -21,6 +29,29 @@ const Proyecto = () => {
         descripcion: "",
         fecha_limite: "",
     });
+
+
+
+    // Obtener usuarios disponibles al cargar el componente
+    useEffect(() => {
+        const fetchUsuarios = async () => {
+            try {
+                const response = await usuarioService.obtenerUsuarios(); // Obtén usuarios del backend
+                const opcionesUsuarios = response
+                    .filter(usuario => usuario.id_usuario !== 1) // Excluir usuario con ID 1
+                    .map(usuario => ({
+                        value: usuario.id_usuario,
+                        label: usuario.nombre_usuario,
+                    }));
+                setUsuarios(opcionesUsuarios);
+            } catch (error) {
+                toast.error("Error al cargar los usuarios.");
+                console.error("Error al cargar usuarios:", error);
+            }
+        };
+
+        fetchUsuarios();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -32,6 +63,12 @@ const Proyecto = () => {
         setTareaData({ ...tareaData, [name]: value });
     };
 
+
+    const handleUsuarioSelect = (selectedOptions) => {
+        setSelectedUsuarios(selectedOptions);
+    };
+
+
     const crearTarea = async (idProyecto) => {
         if (!idProyecto) {
             toast.error("El ID del proyecto no está disponible.");
@@ -40,16 +77,18 @@ const Proyecto = () => {
 
         const nuevaTarea = {
             ...tareaData,
-            id_proyecto: idProyecto, // Asegurar que se incluye el id_proyecto
-            id_usuario: id_usuario, // Asegurar que se incluye el id_usuario
+            id_proyecto: idProyecto,
+            id_usuario: id_usuario,
+            usuarios: selectedUsuarios.map(usuario => usuario.value), // IDs de usuarios seleccionados
         };
 
-        console.log("Datos de la tarea enviados al backend:", nuevaTarea); // Depuración
+        console.log("Datos de la tarea enviados al backend:", nuevaTarea);
 
         try {
             await tareaService.crearTarea(nuevaTarea);
             toast.success("Tarea creada exitosamente");
             setTareaData({ titulo: "", descripcion: "", fecha_limite: "" });
+            setSelectedUsuarios([]); // Resetea la selección de usuarios
         } catch (error) {
             toast.error("Error al crear tarea. Verifica los datos.");
             console.error("Error al crear tarea:", error.response || error);
@@ -59,13 +98,9 @@ const Proyecto = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log("Datos del proyecto enviados al backend:", formData); // Depuración
-
         try {
             // Crear el proyecto primero
             const proyectoData = await proyectoService.crearProyecto(formData);
-
-            console.log("Respuesta del backend al crear proyecto:", proyectoData); // Depuración
 
             if (!proyectoData.id_proyecto) {
                 throw new Error("No se pudo obtener el ID del proyecto.");
@@ -75,15 +110,7 @@ const Proyecto = () => {
 
             // Si se activa el formulario de tareas, crea la tarea
             if (mostrarTarea) {
-                const nuevaTarea = {
-                    ...tareaData,
-                    id_proyecto: proyectoData.id_proyecto, // Asigna el ID del proyecto recién creado
-                    id_usuario: id_usuario, // Incluye el ID del usuario
-                };
-
-                await tareaService.crearTarea(nuevaTarea);
-                toast.success("Tarea creada exitosamente");
-                setTareaData({ titulo: "", descripcion: "", fecha_limite: "" });
+                await crearTarea(proyectoData.id_proyecto);
             }
 
             // Resetea los formularios
@@ -108,6 +135,7 @@ const Proyecto = () => {
             console.error("Error al crear proyecto o tarea:", error.response || error);
         }
     };
+
 
 
     return (
@@ -181,6 +209,22 @@ const Proyecto = () => {
                 {mostrarTarea && (
                     <table className="table-auto mt-4 w-full">
                         <tbody>
+                            <tr>
+                                <td className="flex flex-col w-6/12 pr-2">
+                                    <label className="text-sm font-medium text-gray-700 mb-2">
+                                        Seleccionar usuarios:
+                                    </label>
+                                    <Select
+                                        isMulti
+                                        options={usuarios}
+                                        value={selectedUsuarios}
+                                        onChange={handleUsuarioSelect}
+                                        placeholder="Seleccione usuarios"
+                                        className="basic-multi-select"
+                                    />
+                                </td>
+                            </tr>
+
                             {/* Título y Fecha límite en la misma fila */}
                             <tr className="flex justify-between">
                                 <td className="flex flex-col w-6/12 pr-2">
