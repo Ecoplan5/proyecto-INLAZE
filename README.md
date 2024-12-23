@@ -26,9 +26,9 @@ Nombre de Usuario: Admin
 Contraseña: 12345678
 Si prefieres no usar este usuario preconfigurado, también puedes registrarte y crear tu propia cuenta para explorar el sistema.
 
-Una vez dentro de la aplicación, te encontrarás con una interfaz que te permitirá gestionar proyectos y tareas de manera sencilla. Desde la página inicial, podrás el componente principal donde . Puedes crear nuevos proyectos y agregar tareas al mismo  luego  de esto el sistema te llevara a proyectos donde podrás ver los proyectos creados y las tareas asocidas, puedes editar los detalles de los que ya están creados directamente desde el listado. Además, tienes la opción de ocultar las tareas asociadas a un proyecto, dejando visibles únicamente los nombres de los proyectos si necesitas una visión más general.
+Una vez dentro de la aplicación, te encontrarás con una interfaz que te permitirá gestionar proyectos y tareas de manera sencilla. Desde la página inicial, podrás el componente principal donde . Puedes crear nuevos proyectos y agregar tareas  y asignar un usuario y/o un equipo  la tarea,  luego  de esto el sistema te llevara a proyectos donde podrás ver los proyectos creados las tareas asocidas y los mienbros asociados a las tareas, puedes editar los detalles de los que ya están creados directamente desde el listado. Además, tienes la opción de ocultar las tareas asociadas a un proyecto, dejando visibles únicamente los nombres de los proyectos si necesitas una visión más general.
 
- Dentro de cada proyecto, puedes gestionar las tareas asociadas. Puedes crear nuevas tareas especificando su título, descripción, fecha límite, estado (por hacer, en progreso, completada) y asignarlas a un usuario
+ Dentro de cada proyecto, puedes gestionar las tareas asociadas. Puedes crear nuevas tareas especificando su título, descripción, fecha límite, estado (por hacer, en progreso, completada) y asignarlas a un usuario y/o un equipo.
  También puedes editar las tareas para modificar su información, marcar una tarea como completada o incluso revertirla a su estado anterior si es necesario. Si alguna tarea deja de ser relevante, tienes la opción de eliminarla. pero tambien se eliminan los comentarios asociados a la tarea.
 
 

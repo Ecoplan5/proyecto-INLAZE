@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaPencilAlt, FaTrash } from 'react-icons/fa';
+import usuarioService from "../services/usuarioService"; // Servicio para obtener los usuarios
+import Select from "react-select";
 
 import proyectoService from '../services/proyectoService';
 import comentarioService from '../services/comentariosService';
@@ -23,7 +25,8 @@ const ProyectoList = () => {
     const [searchKeyword, setSearchKeyword] = useState("");
     const [filterState, setFilterState] = useState("todos");
     const [filterDate, setFilterDate] = useState("");
-
+    const [usuarios, setUsuarios] = useState([]);
+    const [selectedUsuarios, setSelectedUsuarios] = useState([]);
 
     const userId = parseInt(localStorage.getItem("id_usuario"), 10);
     const userRole = parseInt(localStorage.getItem("id_rol"), 10);
@@ -64,6 +67,31 @@ const ProyectoList = () => {
         setTareaData({ ...tareaData, [name]: value });
     };
 
+    // Obtener usuarios disponibles al cargar el componente
+    useEffect(() => {
+        const fetchUsuarios = async () => {
+            try {
+                const response = await usuarioService.obtenerUsuarios(); // Obtén usuarios del backend
+                const opcionesUsuarios = response
+                    .filter(usuario => usuario.id_usuario !== 1) // Excluir usuario con ID 1
+                    .map(usuario => ({
+                        value: usuario.id_usuario,
+                        label: usuario.nombre_usuario,
+                    }));
+                setUsuarios(opcionesUsuarios);
+            } catch (error) {
+                toast.error("Error al cargar los usuarios.");
+                console.error("Error al cargar usuarios:", error);
+            }
+        };
+
+        fetchUsuarios();
+    }, []);
+
+
+    const handleUsuarioSelect = (selectedOptions) => {
+        setSelectedUsuarios(selectedOptions);
+    };
     // Crear tarea asociada al proyecto seleccionado
     const crearTarea = async () => {
         if (!mostrarTarea) return;
@@ -72,6 +100,8 @@ const ProyectoList = () => {
                 ...tareaData,
                 id_proyecto: mostrarTarea,
                 id_usuario: userId,
+                usuarios: selectedUsuarios.map(usuario => usuario.value), // IDs de usuarios seleccionados
+
             };
             await tareaService.crearTarea(nuevaTarea);
             toast.success('Tarea creada exitosamente');
@@ -119,18 +149,32 @@ const ProyectoList = () => {
         });
     };
 
+
+
     const actualizarTarea = async () => {
         try {
-            await tareaService.modificarTarea(editarTareaId, tareaData);
+            // Actualizar datos de la tarea incluyendo usuarios seleccionados
+            const tareaActualizada = {
+                ...tareaData,
+                usuarios: selectedUsuarios.map(usuario => usuario.value), // IDs de usuarios seleccionados
+            };
+
+            // Log para verificar los datos enviados
+            console.log("Datos enviados para actualizar la tarea:", tareaActualizada);
+
+            await tareaService.modificarTarea(editarTareaId, tareaActualizada);
             toast.success('Tarea editada exitosamente');
             setTareaData({ titulo: '', descripcion: '', fecha_limite: '' });
-            setEditarTareaId(null); // Cerramos el modal después de editar
+            setSelectedUsuarios([]); // Limpiar usuarios seleccionados
+            setEditarTareaId(null); // Cerrar el modal
             obtenerProyectos(); // Refrescar lista de proyectos
         } catch (error) {
             toast.error('Error al editar tarea');
             console.error('Error al editar tarea:', error);
         }
     };
+
+
 
     const [comentariosPorTarea, setComentariosPorTarea] = useState({}); // Estado para comentarios por tarea
     const obtenerComentarios = async (id_tarea) => {
@@ -354,6 +398,7 @@ const ProyectoList = () => {
                                                                             <span className="text-gray-500">No asignados</span>
                                                                         )}
                                                                     </td>
+
                                                                     <td className="border border-gray-300 px-4 py-2">
                                                                         <div className="flex flex-row items-center gap-8">
                                                                             {/* Editar */}
@@ -599,7 +644,7 @@ const ProyectoList = () => {
             {editarTareaId && (
                 <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
                     <div className="bg-white p-6 rounded shadow-lg w-96">
-                        <h3 className="text-xl mb-4">Editar Tarea</h3>
+                        <h3 className="text-xl mb-4">Editar tarea</h3>
                         <input
                             type="text"
                             name="titulo"
@@ -626,6 +671,27 @@ const ProyectoList = () => {
                             required
                             className="w-full p-2 border border-gray-300 rounded mb-4"
                         />
+
+                        <td className="flex flex-col w-full ">
+                            <label className="text-sm font-medium text-gray-700 mb-2">
+                                Agregar miembros a la tarea:</label>
+                            <Select
+                                isMulti
+                                options={usuarios} // Usuarios no seleccionados
+                                value={selectedUsuarios}
+                                onChange={handleUsuarioSelect}
+                                placeholder="Seleccione usuarios"
+                                className="basic-multi-select"
+                                styles={{
+                                    container: (provided) => ({
+                                        ...provided,
+                                        width: '100%',
+                                    }),
+                                }}
+                            />
+
+                        </td>
+                        <br></br>
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={actualizarTarea}
@@ -643,6 +709,7 @@ const ProyectoList = () => {
                     </div>
                 </div>
             )}
+
             <ToastContainer />
         </div>
     );
