@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEye, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import usuarioService from "../services/usuarioService"; // Servicio para obtener los usuarios
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 import proyectoService from '../services/proyectoService';
 import comentarioService from '../services/comentariosService';
@@ -126,18 +127,32 @@ const ProyectoList = () => {
         }
     };
 
+
     // Función para eliminar una tarea
     const eliminarTarea = async (id_tarea) => {
-        try {
-            await tareaService.eliminarTarea(id_tarea);
-            toast.success('Tarea eliminada exitosamente');
-            obtenerProyectos();
-        } catch (error) {
-            toast.error('Error al eliminar tarea');
-            console.error('Error al eliminar tarea:', error);
-        }
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "No podrás deshacer esta acción.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await tareaService.eliminarTarea(id_tarea);
+                    toast.success("Tarea eliminada exitosamente");
+                    obtenerProyectos();
+                } catch (error) {
+                    toast.error("Error al eliminar tarea");
+                    console.error("Error al eliminar tarea:", error);
+                }
+            }
+        });
     };
-
+    
     // Función para manejar la edición de tareas
     const [editarTareaId, setEditarTareaId] = useState(null);
     const manejarEdicion = (tarea) => {

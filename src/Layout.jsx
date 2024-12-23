@@ -109,7 +109,7 @@ const Layout = ({ children }) => {
                                                 <p>
                                                     <strong>
                                                         {comentario.Usuario?.nombre_usuario || "Usuario desconocido"}
-                                                    :</strong>{" "}
+                                                        :</strong>{" "}
                                                     {comentario.contenido || "Sin contenido"}
                                                 </p>
                                             </li>
@@ -144,6 +144,9 @@ const Layout = ({ children }) => {
                     )}
                 </header>
                 <div className="content flex-1 bg-gray-100 p-4">{children}</div>
+                <footer className="bg-gray-200 text-center text-sm py-2">
+                    Hecho por <strong>Feliciano Mosquera</strong>.
+                </footer>
             </div>
         </div>
     );
